@@ -14,4 +14,8 @@ struct WeatherApp: App {
             ContentView()
         }
     }
+    
+    init() {
+        AppLog("Fonts: \(CustomFont.likelyCustomFontNames())")
+    }
 }

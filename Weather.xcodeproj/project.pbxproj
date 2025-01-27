@@ -29,9 +29,31 @@
 		57A23E6D2D4824590094A1ED /* WeatherUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WeatherUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		57A23E862D48268C0094A1ED /* Exceptions for "Weather" folder in "Weather" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+				Model/SearchResultDataObject.swift,
+			);
+			target = 57A23E522D4824570094A1ED /* Weather */;
+		};
+		57A23E872D48268C0094A1ED /* Exceptions for "Weather" folder in "WeatherUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Model/SearchResultDataObject.swift,
+			);
+			target = 57A23E6C2D4824590094A1ED /* WeatherUITests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		57A23E552D4824570094A1ED /* Weather */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				57A23E862D48268C0094A1ED /* Exceptions for "Weather" folder in "Weather" target */,
+				57A23E872D48268C0094A1ED /* Exceptions for "Weather" folder in "WeatherUITests" target */,
+			);
 			path = Weather;
 			sourceTree = "<group>";
 		};
@@ -399,6 +421,7 @@
 				DEVELOPMENT_TEAM = C25K9LS5G2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Weather/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -428,6 +451,7 @@
 				DEVELOPMENT_TEAM = C25K9LS5G2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Weather/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
