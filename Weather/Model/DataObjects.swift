@@ -13,7 +13,16 @@ struct SearchResultDataObject: Codable {
     let lat, lon: Double?
     let url: String?
     
-    var searchResult: SearchResult {
+    var searchResult: SearchResult? {
         
+        guard let id, let name, let url else {
+            return nil
+        }
+        
+        return SearchResult(
+            id: id,
+            name: name,
+            url: url
+        )
     }
 }
