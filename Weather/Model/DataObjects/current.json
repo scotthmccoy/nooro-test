@@ -1,0 +1,47 @@
+{
+  "location": {
+    "name": "Los Angeles",
+    "region": "California",
+    "country": "United States of America",
+    "lat": 34.0522,
+    "lon": -118.2428,
+    "tz_id": "America/Los_Angeles",
+    "localtime_epoch": 1738112455,
+    "localtime": "2025-01-28 17:00"
+  },
+  "current": {
+    "last_updated_epoch": 1738112400,
+    "last_updated": "2025-01-28 17:00",
+    "temp_c": 14.4,
+    "temp_f": 57.9,
+    "is_day": 1,
+    "condition": {
+      "text": "Sunny",
+      "icon": "//cdn.weatherapi.com/weather/64x64/day/113.png",
+      "code": 1000
+    },
+    "wind_mph": 8.9,
+    "wind_kph": 14.4,
+    "wind_degree": 222,
+    "wind_dir": "SW",
+    "pressure_mb": 1017.0,
+    "pressure_in": 30.02,
+    "precip_mm": 0.0,
+    "precip_in": 0.0,
+    "humidity": 62,
+    "cloud": 0,
+    "feelslike_c": 13.4,
+    "feelslike_f": 56.1,
+    "windchill_c": 12.4,
+    "windchill_f": 54.3,
+    "heatindex_c": 13.1,
+    "heatindex_f": 55.5,
+    "dewpoint_c": 8.4,
+    "dewpoint_f": 47.0,
+    "vis_km": 16.0,
+    "vis_miles": 9.0,
+    "uv": 0.0,
+    "gust_mph": 10.3,
+    "gust_kph": 16.6
+  }
+}

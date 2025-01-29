@@ -24,7 +24,9 @@ struct CurrentWeatherDataObject: Codable {
             AppLog("No icon")
             return nil
         }
-        guard let weatherIconUrl = URL(string: weatherIconUrlString) else {
+        
+        let hiResWeatherIconUrlString = weatherIconUrlString.replacingOccurrences(of: "64x64", with: "128x128")
+        guard let weatherIconUrl = URL(string: "https:" + hiResWeatherIconUrlString) else {
             AppLog("Could not make icon url")
             return nil
         }

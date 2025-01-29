@@ -44,8 +44,18 @@ struct SearchResultRowView: View {
                     
             }
             
-            Image(systemName: "cloud")
-                .resizable()
+            CachedAsyncImage(url: weather.weatherIconUrl) { phase in
+                switch phase {
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    default:
+                        ProgressView()
+                            .progressViewStyle(.circular)
+                }
+            }
+            
 
         }
         .padding(.leading, 30)
@@ -59,10 +69,6 @@ struct SearchResultRowView: View {
                 cornerRadius: 18)
             .fill(Color.textFieldBackground)
         )
-        
-
-        
-        
     }
     
 }

@@ -30,4 +30,12 @@ extension Color {
     static var textFieldSuggestionTextColor: Self {
         Color(hex: 0xcccccc)
     }
+    
+    static var weatherStatsKeyTextColor: Self {
+        Color(hex: 0xC4C4C4)
+    }
+
+    static var weatherStatsValueTextColor: Self {
+        Color(hex: 0x9A9A9A)
+    }
 }

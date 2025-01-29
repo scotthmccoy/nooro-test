@@ -56,20 +56,8 @@ final class RepositoryDataProvider: RepositoryDataProviderProtocol {
                     }
                 
             case .mainBundleTestData:
-                
-                // Make a file URL
-                guard let path = Bundle.main.path(forResource:"exploreData.json", ofType: nil) else {
-                    return .failure(.noPath)
-                }
-                let url = URL(fileURLWithPath: path)
-
-                // Pass it to the API
-                return await self.weatherApi
-                    .search(url: url)
-                    .mapError {
-                        // Wrap in
-                        .apiError($0)
-                    }
+                let weathers = [Weather.stub, Weather.stub]
+                return .success(weathers)
 
             case .empty:
                 return .success([])

@@ -15,6 +15,7 @@ struct SearchResult: Hashable {
 }
 
 struct Weather: Hashable {
+    let id = UUID()
     let locationId: String
     let name: String
     let weatherIconUrl: URL
@@ -29,12 +30,12 @@ extension Weather {
     static var stub: Self {
         Weather(
             locationId: "Los Angeles",
-            name: "Los Angeles",
+            name: "Hyderabad",
             weatherIconUrl: URL(string: "https://cdn.weatherapi.com/weather/64x64/day/113.png")!,
-            temperature: 73,
-            humidityPercent: 46,
-            uvIndex: 10,
-            feelsLikeTemperature: 70
+            temperature: 31,
+            humidityPercent: 20,
+            uvIndex: 4,
+            feelsLikeTemperature: 38
         )
     }
 }

@@ -67,10 +67,21 @@ final class WeatherApi: WeatherApiProtocol {
             $0.searchResult
         }
         
+        // Get Weather objects in parallel
         var weathers = [Weather]()
-        for searchResult in searchResults {
-            if let weather = await getCurrentWeather(locationId: searchResult.locationId).getSuccessOrLogError() {
-                weathers.append(weather)
+        await withTaskGroup(of: Result<Weather, WeatherApiError>.self) { group in
+
+            for searchResult in searchResults {
+                group.addTask {
+                    // TODO: cache responses to reduce API hits
+                    await self.getCurrentWeather(locationId: searchResult.locationId)
+                }
+            }
+ 
+            for await result in group {
+                if let weather = result.getSuccessOrLogError() {
+                    weathers.append(weather)
+                }
             }
         }
         

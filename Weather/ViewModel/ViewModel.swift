@@ -11,14 +11,15 @@ import Combine
 
 @MainActor
 class ViewModel: ObservableObject {
-    
-    
-    
+
     @Published var searchString = "" {
         didSet {
             taskDebouncer.debounce(delay: 1.0) {
                 AppLog("✅ Finished debounce delay")
                 Task {
+                    guard await !self.searchString.isEmpty else {
+                        return
+                    }
                     await self.repository.search(string: self.searchString)
                 }
             }
@@ -26,6 +27,7 @@ class ViewModel: ObservableObject {
     }
     
     @Published var weathers: [Weather] = []
+    @Published private(set) var selectedWeather: Weather?
     @Published var errorMessage: String?
     
     
@@ -55,6 +57,12 @@ class ViewModel: ObservableObject {
         }
     }
     
+    func select(weather: Weather) {
+        self.searchString = ""
+        self.weathers = []
+        self.selectedWeather = weather
+    }
+    
 //    func onAppear() {
 //        AppLog()
 //        Task {
@@ -76,3 +84,6 @@ class ViewModel: ObservableObject {
         }
     }
 }
+
+
+

@@ -11,6 +11,8 @@ struct MainView: View {
     
     @StateObject var viewModel = ViewModel()
     
+    
+    
     var body: some View {
         VStack {
             HStack {
@@ -30,8 +32,10 @@ struct MainView: View {
             .foregroundColor(.black)
             .padding()
             
-
-            if viewModel.weathers.count > 0 {
+            if let selectedWeather = viewModel.selectedWeather {
+                SearchResultRowView(weather: selectedWeather)
+                Spacer()
+            } else if viewModel.weathers.count > 0 {
                 searchResultsScrollView
             } else {
                 pleaseSearchForACity
@@ -46,6 +50,9 @@ struct MainView: View {
         ScrollView {
             ForEach(viewModel.weathers, id: \.self) { weather in
                 SearchResultRowView(weather: weather)
+                    .onTapGesture {
+                        viewModel.select(weather: weather)
+                    }
             }
         }
     }
@@ -89,5 +96,13 @@ struct MainView: View {
 }
 
 #Preview {
-    MainView()
+    MainView(
+        viewModel: ViewModel(
+            repository: Repository(
+                repositoryDataProvider: RepositoryDataProvider(
+                    .mainBundleTestData
+                )
+            )
+        )
+    )
 }
