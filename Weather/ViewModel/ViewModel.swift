@@ -25,13 +25,13 @@ class ViewModel: ObservableObject {
         }
     }
     
-    @Published var searchResults: [SearchResult] = []
+    @Published var weathers: [Weather] = []
     @Published var errorMessage: String?
     
     
     private let taskDebouncer = TaskDebouncer()
     private var repository: RepositoryProtocol
-    private var searchResultsSubscription: AnyCancellable?
+    private var weathersSubscription: AnyCancellable?
     private var errorMessageSubscription: AnyCancellable?
     
     init(
@@ -40,10 +40,10 @@ class ViewModel: ObservableObject {
         self.repository = repository
         
         // Listen for updates from repository
-        searchResultsSubscription = repository.searchResultsPublisher.sink { newValue in
+        weathersSubscription = repository.weathersPublisher.sink { newValue in
             Task { @MainActor in
-                AppLog("Search Results: \(newValue)")
-                self.searchResults = newValue
+                AppLog("\(newValue.count) Weathers: \(newValue)")
+                self.weathers = newValue
             }
         }
         
@@ -69,10 +69,10 @@ class ViewModel: ObservableObject {
 //        }
 //    }
 //    
-//    func btnTryAgainTapped() {
-//        AppLog()
-//        Task {
-//            await repository.fetch()
-//        }
-//    }
+    func btnTryAgainTapped() {
+        AppLog()
+        Task {
+            await self.repository.search(string: self.searchString)
+        }
+    }
 }

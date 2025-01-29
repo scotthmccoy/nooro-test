@@ -5,20 +5,27 @@ enum WeatherApiError: Error, Equatable {
     case invalidUrl
     case networkError(NetworkError)
     case codableHelperError(CodableHelperError)
+    case couldNotMakeDomainObject
 }
 
 protocol WeatherApiProtocol: Sendable {
-    func search(string: String) async -> Result<[SearchResult], WeatherApiError>
-    func search(url: URL, string: String) async -> Result<[SearchResult], WeatherApiError>
+    func search(string: String) async -> Result<[Weather], WeatherApiError>
+    func search(url: URL) async -> Result<[Weather], WeatherApiError>
+    
+    func getCurrentWeather(locationId: String) async -> Result<Weather, WeatherApiError>
 }
 
 final class WeatherApi: WeatherApiProtocol {
+
+    
+    
+
+    
 
     static let singleton = WeatherApi()
     
     @MainActor var searchBaseUrlString = "https://api.weatherapi.com/v1/search.json?key=b50111d17cbf4389856203421252701&q="
     @MainActor var currentWeatherBaseUrlString = "https://api.weatherapi.com/v1/current.json?key=b50111d17cbf4389856203421252701&q="
-    
     
     private let network: NetworkProtocol
     private let codableHelper: CodableHelperProtocol
@@ -31,7 +38,7 @@ final class WeatherApi: WeatherApiProtocol {
         self.codableHelper = codableHelper
     }
     
-    func search(string: String) async -> Result<[SearchResult], WeatherApiError> {
+    func search(string: String) async -> Result<[Weather], WeatherApiError> {
         
         guard let escapedSearchString = string.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
             return .failure(.invalidUrl)
@@ -43,11 +50,33 @@ final class WeatherApi: WeatherApiProtocol {
             return .failure(.invalidUrl)
         }
         
+        return await search(url: url)
+    }
+    
+    func search(url: URL) async -> Result<[Weather], WeatherApiError> {
         let urlRequest = URLRequest(url: url)
         
         // Use private method to get search results
-        return await get(urlRequest: urlRequest)
+        let result: Result<[SearchResultDataObject], WeatherApiError> = await get(urlRequest: urlRequest)
+        
+        guard case let .success(searchResultsDataObjects) = result else {
+            return .failure(result.error!)
+        }
+        
+        let searchResults = searchResultsDataObjects.compactMap {
+            $0.searchResult
+        }
+        
+        var weathers = [Weather]()
+        for searchResult in searchResults {
+            if let weather = await getCurrentWeather(locationId: searchResult.locationId).getSuccessOrLogError() {
+                weathers.append(weather)
+            }
+        }
+        
+        return .success(weathers)
     }
+    
     
     // Alternative method. Uses any URL. Useful for loading from the Bundle.
     func search(
@@ -56,14 +85,53 @@ final class WeatherApi: WeatherApiProtocol {
     ) async -> Result<[SearchResult], WeatherApiError> {
         
         let urlRequest = URLRequest(url: url)
+        let result: Result<[SearchResultDataObject], WeatherApiError> = await get(urlRequest: urlRequest)
         
-        return await get(urlRequest: urlRequest)
+        // Convert to Domain Object
+        return result.map {
+            $0.compactMap {
+                $0.searchResult
+            }
+        }
     }
     
+    func getCurrentWeather(
+        locationId: String
+    ) async -> Result<Weather, WeatherApiError> {
+        
+        guard let escapedSearchString = locationId.addingPercentEncoding(
+            withAllowedCharacters: .urlQueryAllowed
+        ) else {
+            return .failure(.invalidUrl)
+        }
+        
+        let urlString = await currentWeatherBaseUrlString + escapedSearchString
+        
+        guard let url = URL(string: urlString) else {
+            return .failure(.invalidUrl)
+        }
+        
+        let urlRequest = URLRequest(url: url)
+        let result: Result<CurrentWeatherDataObject, WeatherApiError> = await get(urlRequest: urlRequest)
+        
+        // Convert to Domain Object
+        return result.flatMap {
+            guard let currentWeather = $0.weather(locationId: locationId) else {
+                return .failure(.couldNotMakeDomainObject)
+            }
+            return .success(currentWeather)
+        }
+
+
+    }
+    
+    
+    
+    
     // MARK: - Private
-    private func get(
+    private func get<T: Decodable>(
         urlRequest: URLRequest
-    ) async -> Result<[SearchResult], WeatherApiError> {
+    ) async -> Result<T, WeatherApiError> {
         
         return await network.requestData(
             urlRequest: urlRequest
@@ -71,9 +139,10 @@ final class WeatherApi: WeatherApiProtocol {
             // Wrap NetworkError
             .networkError($0)
         }.flatMap {
-            // Convert Data to Result<APIResponseDataObject, APIError>
-            codableHelper.decode(
-                type: [SearchResultDataObject].self,
+            AppLog("API Response: \($0.prettyPrintedJSONString)")
+            
+            return codableHelper.decode(
+                type: T.self,
                 from: $0
             )
             // Wrap CodableHelperError
@@ -81,12 +150,5 @@ final class WeatherApi: WeatherApiProtocol {
                 .codableHelperError($0)
             }
         }
-        .map {
-            // Convert Data objects to domain objects
-            $0.compactMap {
-                $0.searchResult
-            }
-        }
-
     }
 }

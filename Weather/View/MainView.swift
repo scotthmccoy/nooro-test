@@ -21,35 +21,70 @@ struct MainView: View {
                 Image(systemName: "magnifyingglass") // Icon
                     .foregroundColor(.gray)
             }
-            .padding() // Adds padding inside the Text
+            .padding()
             .background(
                 RoundedRectangle(
                     cornerRadius: 18)
-                
-                
-                .fill(Color.textFieldBackground) // Background color
+                .fill(Color.textFieldBackground)
             )
-            .foregroundColor(.black) // Text color
+            .foregroundColor(.black)
             .padding()
             
-            Spacer()
-            Text("No City Selected")
-                .font(
-                    .custom(
-                        CustomFont.poppinsSemiBold.internalName,
-                        size: 30
-                    )
-                )
-            Text("Please Search For A City")
-                .font(
-                    .custom(
-                        CustomFont.poppinsSemiBold.internalName,
-                        size: 17
-                    )
-                )
-            Spacer()
+
+            if viewModel.weathers.count > 0 {
+                searchResultsScrollView
+            } else {
+                pleaseSearchForACity
+            }
+            
         }
         .padding()
+    }
+    
+    @ViewBuilder
+    var searchResultsScrollView: some View {
+        ScrollView {
+            ForEach(viewModel.weathers, id: \.self) { weather in
+                SearchResultRowView(weather: weather)
+            }
+        }
+    }
+
+    @ViewBuilder
+    var pleaseSearchForACity: some View {
+        Spacer()
+        Text("No City Selected")
+            .font(
+                .custom(
+                    CustomFont.poppinsSemiBold.internalName,
+                    size: 30
+                )
+            )
+        Text("Please Search For A City")
+            .font(
+                .custom(
+                    CustomFont.poppinsSemiBold.internalName,
+                    size: 17
+                )
+            )
+        Spacer()
+    }
+    
+    func show(errorMessage: String) -> some View {
+        VStack {
+            Text("Network Error")
+                .font(.largeTitle)
+            Button("Try Again") {
+                viewModel.btnTryAgainTapped()
+            }
+            ScrollView {
+                Text("Error message: \(errorMessage)")
+                    .font(.footnote)
+                    .padding(20)
+            }
+            .frame(maxHeight: 300)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 

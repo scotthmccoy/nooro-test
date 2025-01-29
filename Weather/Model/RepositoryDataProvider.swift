@@ -26,7 +26,7 @@ enum RepositoryDataProviderError: Error, Equatable {
 
 
 protocol RepositoryDataProviderProtocol: Sendable {
-    func search(string: String) async -> Result<[SearchResult], RepositoryDataProviderError>
+    func search(string: String) async -> Result<[Weather], RepositoryDataProviderError>
 }
 
 
@@ -43,7 +43,7 @@ final class RepositoryDataProvider: RepositoryDataProviderProtocol {
         self.weatherApi = weatherApi
     }
     
-    func search(string: String) async -> Result<[SearchResult], RepositoryDataProviderError> {
+    func search(string: String) async -> Result<[Weather], RepositoryDataProviderError> {
 
         switch repositoryDataProviderSource {
             case .live:
@@ -65,7 +65,7 @@ final class RepositoryDataProvider: RepositoryDataProviderProtocol {
 
                 // Pass it to the API
                 return await self.weatherApi
-                    .search(url: url, string: string)
+                    .search(url: url)
                     .mapError {
                         // Wrap in
                         .apiError($0)

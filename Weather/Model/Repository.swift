@@ -5,8 +5,8 @@ import Foundation
 
 @MainActor
 protocol RepositoryProtocol: Sendable {
-    var searchResults: [SearchResult] { get }
-    var searchResultsPublisher: Published<[SearchResult]>.Publisher { get }
+    var weathers: [Weather] { get }
+    var weathersPublisher: Published<[Weather]>.Publisher { get }
     
     var errorMessage: String? { get }
     var errorMessagePublisher: Published<String?>.Publisher { get }
@@ -17,11 +17,13 @@ protocol RepositoryProtocol: Sendable {
 
 @MainActor
 final class Repository: RepositoryProtocol, ObservableObject {
+
+    
     
     static let singleton = Repository()
     
-    @Published var searchResults = [SearchResult]()
-    var searchResultsPublisher: Published<[SearchResult]>.Publisher {$searchResults}
+    @Published var weathers = [Weather]()
+    var weathersPublisher: Published<[Weather]>.Publisher {$weathers}
     
     @Published var errorMessage: String? = nil
     var errorMessagePublisher: Published<String?>.Publisher {$errorMessage}
@@ -41,8 +43,8 @@ final class Repository: RepositoryProtocol, ObservableObject {
         AppLog("string: \(string)")
         let result = await repositoryDataProvider.search(string: string)
         switch result {
-            case .success(let searchResults):
-                self.searchResults = searchResults
+            case .success(let weathers):
+                self.weathers = weathers
             case .failure(let repositoryDataProviderError):
                 self.errorMessage = "\(repositoryDataProviderError)"
         }
