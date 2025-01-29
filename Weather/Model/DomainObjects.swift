@@ -11,13 +11,11 @@ import Foundation
 struct SearchResult: Hashable {
     let id: Int
     let name: String
-    let locationId: String
 }
 
 // Note: Codable for AppStorage
 struct Weather: Hashable, Codable {
-    var id = UUID()
-    let locationId: String
+    let locationId: Int
     let name: String
     let weatherIconUrl: URL
     let temperature: Int
@@ -30,7 +28,7 @@ struct Weather: Hashable, Codable {
 extension Weather {
     static var stub: Self {
         Weather(
-            locationId: "Los Angeles",
+            locationId: 12345,
             name: "Hyderabad",
             weatherIconUrl: URL(string: "https://cdn.weatherapi.com/weather/64x64/day/113.png")!,
             temperature: 31,

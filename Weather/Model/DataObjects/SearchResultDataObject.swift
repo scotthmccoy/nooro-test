@@ -21,8 +21,7 @@ struct SearchResultDataObject: Codable {
         
         return SearchResult(
             id: id,
-            name: name,
-            locationId: url
+            name: name
         )
     }
 }

@@ -13,8 +13,6 @@ import SwiftUI
 @MainActor
 class ViewModel: ObservableObject {
     
-    
-    
     @Published var searchString = "" {
         didSet {
             taskDebouncer.debounce(delay: 1.0) {
@@ -97,20 +95,6 @@ class ViewModel: ObservableObject {
         self.selectedWeather = weather
     }
     
-//    func onAppear() {
-//        AppLog()
-//        Task {
-//            await repository.fetch()
-//        }
-//    }
-//    
-//    func refresh() {
-//        AppLog()
-//        Task {
-//            await repository.fetch()
-//        }
-//    }
-//    
     func btnTryAgainTapped() {
         AppLog()
         Task {

@@ -16,7 +16,7 @@ protocol WeatherApiProtocol: Sendable {
     func search(string: String) async -> Result<[Weather], WeatherApiError>
     func search(url: URL) async -> Result<[Weather], WeatherApiError>
     
-    func getCurrentWeather(locationId: String) async -> Result<Weather, WeatherApiError>
+    func getCurrentWeather(locationId: Int) async -> Result<Weather, WeatherApiError>
 }
 
 final class WeatherApi: WeatherApiProtocol {
@@ -24,7 +24,7 @@ final class WeatherApi: WeatherApiProtocol {
     static let singleton = WeatherApi()
     
     @MainActor var searchBaseUrlString = "https://api.weatherapi.com/v1/search.json?key=b50111d17cbf4389856203421252701&q="
-    @MainActor var currentWeatherBaseUrlString = "https://api.weatherapi.com/v1/current.json?key=b50111d17cbf4389856203421252701&q="
+    @MainActor var currentWeatherBaseUrlString = "https://api.weatherapi.com/v1/current.json?key=b50111d17cbf4389856203421252701&q=id:"
     
     private let network: NetworkProtocol
     private let codableHelper: CodableHelperProtocol
@@ -73,7 +73,7 @@ final class WeatherApi: WeatherApiProtocol {
             for searchResult in searchResults {
                 group.addTask {
                     // TODO: cache responses to reduce API hits
-                    await self.getCurrentWeather(locationId: searchResult.locationId)
+                    await self.getCurrentWeather(locationId: searchResult.id)
                 }
             }
  
@@ -106,16 +106,10 @@ final class WeatherApi: WeatherApiProtocol {
     }
     
     func getCurrentWeather(
-        locationId: String
+        locationId: Int
     ) async -> Result<Weather, WeatherApiError> {
         
-        guard let escapedSearchString = locationId.addingPercentEncoding(
-            withAllowedCharacters: .urlQueryAllowed
-        ) else {
-            return .failure(.invalidUrl)
-        }
-        
-        let urlString = await currentWeatherBaseUrlString + escapedSearchString
+        let urlString = await currentWeatherBaseUrlString + "\(locationId)"
         
         guard let url = URL(string: urlString) else {
             return .failure(.invalidUrl)

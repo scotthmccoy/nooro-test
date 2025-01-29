@@ -13,7 +13,7 @@ struct CurrentWeatherDataObject: Codable {
     let location: LocationDataObject?
     let current: CurrentDataObject?
     
-    func weather(locationId: String) -> Weather? {
+    func weather(locationId: Int) -> Weather? {
         
         guard let locationName = location?.name else {
             AppLog("No location name")

@@ -72,20 +72,11 @@ final class RepositoryDataProvider: RepositoryDataProviderProtocol {
         AppLog("weather: \(weather)")
 
         return await self.weatherApi
-            .search(
-                string: weather.locationId
+            .getCurrentWeather(
+                locationId: weather.locationId
             )
             .mapError {
                 .apiError($0)
-            }
-            .flatMap {
-                guard let weather = $0.first(where: {
-                    $0.locationId == weather.locationId
-                }) else {
-                    return .failure(.apiError(.noResults))
-                }
-                
-                return .success(weather)
             }
 
     }
