@@ -15,11 +15,11 @@ struct CurrentWeatherDataObject: Codable {
     
     func weather(locationId: String) -> Weather? {
         
-        
         guard let locationName = location?.name else {
             AppLog("No location name")
             return nil
         }
+        
         guard let weatherIconUrlString = current?.condition?.icon else {
             AppLog("No icon")
             return nil
@@ -30,18 +30,22 @@ struct CurrentWeatherDataObject: Codable {
             AppLog("Could not make icon url")
             return nil
         }
+        
         guard let temperature = current?.temp_f else {
             AppLog("No temperature")
             return nil
         }
+        
         guard let humidityPercent = current?.humidity else {
             AppLog("No humidityPercent")
             return nil
         }
+        
         guard let uvIndex = current?.uv else {
             AppLog("No uvIndex")
             return nil
         }
+        
         guard let feelsLikeTemperature = current?.feelslike_f else {
             AppLog("No feelsLikeTemperature")
             return nil

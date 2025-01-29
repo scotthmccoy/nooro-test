@@ -32,11 +32,13 @@ struct MainView: View {
             .foregroundColor(.black)
             .padding()
             
-            if let selectedWeather = viewModel.selectedWeather {
-                SearchResultRowView(weather: selectedWeather)
-                Spacer()
+            if let errorMessage = viewModel.errorMessage {
+                show(errorMessage: errorMessage)
             } else if viewModel.weathers.count > 0 {
                 searchResultsScrollView
+            } else if let selectedWeather = viewModel.selectedWeather {
+                SelectedWeatherView(weather: selectedWeather)
+                Spacer()
             } else {
                 pleaseSearchForACity
             }
