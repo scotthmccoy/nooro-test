@@ -27,6 +27,7 @@ enum RepositoryDataProviderError: Error, Equatable {
 
 protocol RepositoryDataProviderProtocol: Sendable {
     func search(string: String) async -> Result<[Weather], RepositoryDataProviderError>
+    func update(weather: Weather) async -> Result<Weather, RepositoryDataProviderError>
 }
 
 
@@ -65,6 +66,28 @@ final class RepositoryDataProvider: RepositoryDataProviderProtocol {
             case .alwaysFail:
                 return .failure(.noPath)
         }
+    }
+    
+    func update(weather: Weather) async -> Result<Weather, RepositoryDataProviderError> {
+        AppLog("weather: \(weather)")
+
+        return await self.weatherApi
+            .search(
+                string: weather.locationId
+            )
+            .mapError {
+                .apiError($0)
+            }
+            .flatMap {
+                guard let weather = $0.first(where: {
+                    $0.locationId == weather.locationId
+                }) else {
+                    return .failure(.apiError(.noResults))
+                }
+                
+                return .success(weather)
+            }
+
     }
 }
 

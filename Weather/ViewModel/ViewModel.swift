@@ -8,10 +8,13 @@
 
 import Foundation
 import Combine
+import SwiftUI
 
 @MainActor
 class ViewModel: ObservableObject {
-
+    
+    
+    
     @Published var searchString = "" {
         didSet {
             taskDebouncer.debounce(delay: 1.0) {
@@ -27,9 +30,21 @@ class ViewModel: ObservableObject {
     }
     
     @Published var weathers: [Weather] = []
-    @Published private(set) var selectedWeather: Weather?
+    @Published private(set) var selectedWeather: Weather? {
+        didSet {
+            guard let selectedWeather else {
+                return
+            }
+            
+            self.appStorageWeatherData = CodableHelper()
+                .encode(value: selectedWeather)
+                .getSuccessOrLogError()
+        }
+    }
     @Published var errorMessage: String?
     
+    private static let storageKey = "appStorageWeatherData"
+    @AppStorage(storageKey) private var appStorageWeatherData: Data?
     
     private let taskDebouncer = TaskDebouncer()
     private var repository: RepositoryProtocol
@@ -40,6 +55,25 @@ class ViewModel: ObservableObject {
         repository: RepositoryProtocol = Repository.singleton
     ) {
         self.repository = repository
+
+        // If we have data saved, unpack it and select that weather
+        if let appStorageWeatherData,
+        let decodedWeather = CodableHelper()
+            .decode(
+                type: Weather.self,
+                from: appStorageWeatherData
+            )
+            .getSuccessOrLogError() {
+            
+            self.selectedWeather = decodedWeather
+        
+            // Update the weather from the API
+            Task {
+                if let updatedWeather = await self.repository.update(weather: decodedWeather) {
+                    self.selectedWeather = updatedWeather
+                }
+            }
+        }
         
         // Listen for updates from repository
         weathersSubscription = repository.weathersPublisher.sink { newValue in

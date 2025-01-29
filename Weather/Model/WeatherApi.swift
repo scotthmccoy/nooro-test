@@ -1,11 +1,15 @@
 import Foundation
 
 
+// Example search URL: https://api.weatherapi.com/v1/search.json?key=b50111d17cbf4389856203421252701&q=Los%20Angeles
+// Example current URL: https://api.weatherapi.com/v1/current.json?key=b50111d17cbf4389856203421252701&q=los-angeles-california-united-states-of-america
+
 enum WeatherApiError: Error, Equatable {
     case invalidUrl
     case networkError(NetworkError)
     case codableHelperError(CodableHelperError)
     case couldNotMakeDomainObject
+    case noResults
 }
 
 protocol WeatherApiProtocol: Sendable {
@@ -16,11 +20,6 @@ protocol WeatherApiProtocol: Sendable {
 }
 
 final class WeatherApi: WeatherApiProtocol {
-
-    
-    
-
-    
 
     static let singleton = WeatherApi()
     
@@ -132,8 +131,6 @@ final class WeatherApi: WeatherApiProtocol {
             }
             return .success(currentWeather)
         }
-
-
     }
     
     

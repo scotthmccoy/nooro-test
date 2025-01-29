@@ -14,8 +14,9 @@ struct SearchResult: Hashable {
     let locationId: String
 }
 
-struct Weather: Hashable {
-    let id = UUID()
+// Note: Codable for AppStorage
+struct Weather: Hashable, Codable {
+    var id = UUID()
     let locationId: String
     let name: String
     let weatherIconUrl: URL

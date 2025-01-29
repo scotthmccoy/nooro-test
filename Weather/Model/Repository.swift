@@ -12,22 +12,23 @@ protocol RepositoryProtocol: Sendable {
     var errorMessagePublisher: Published<String?>.Publisher { get }
     
     func search(string: String) async
+    func update(weather: Weather) async -> Weather?
 }
 
 
 @MainActor
 final class Repository: RepositoryProtocol, ObservableObject {
-
-    
     
     static let singleton = Repository()
-    
+
+    // Publishers
     @Published var weathers = [Weather]()
     var weathersPublisher: Published<[Weather]>.Publisher {$weathers}
     
     @Published var errorMessage: String? = nil
     var errorMessagePublisher: Published<String?>.Publisher {$errorMessage}
     
+    // Private
     private let repositoryDataProvider: RepositoryDataProviderProtocol
     
     // MARK: - init
@@ -48,5 +49,13 @@ final class Repository: RepositoryProtocol, ObservableObject {
             case .failure(let repositoryDataProviderError):
                 self.errorMessage = "\(repositoryDataProviderError)"
         }
+    }
+    
+    func update(weather: Weather) async -> Weather? {
+        AppLog("weather: \(weather)")
+
+        return await repositoryDataProvider
+            .update(weather: weather)
+            .getSuccessOrLogError()
     }
 }
