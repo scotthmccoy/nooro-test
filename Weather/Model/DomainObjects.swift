@@ -22,8 +22,15 @@ struct Weather: Hashable, Codable {
     let humidityPercent: Int
     let uvIndex: Int
     let feelsLikeTemperature: Int
+    let sunrise: String?
+    let sunset: String?
 }
 
+
+struct Astronomy: Hashable {
+    let sunrise: String
+    let sunset: String
+}
 
 extension Weather {
     static var stub: Self {
@@ -34,7 +41,9 @@ extension Weather {
             temperature: 31,
             humidityPercent: 20,
             uvIndex: 4,
-            feelsLikeTemperature: 38
+            feelsLikeTemperature: 38,
+            sunrise: "10:00am",
+            sunset: "10:00pm"
         )
     }
 }

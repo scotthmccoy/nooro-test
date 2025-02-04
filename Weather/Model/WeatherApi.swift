@@ -4,6 +4,11 @@ import Foundation
 // Example search URL: https://api.weatherapi.com/v1/search.json?key=b50111d17cbf4389856203421252701&q=Los%20Angeles
 // Example current URL: https://api.weatherapi.com/v1/current.json?key=b50111d17cbf4389856203421252701&q=los-angeles-california-united-states-of-america
 
+// Astronomy
+// https://api.weatherapi.com/v1/astronomy.json?key=b50111d17cbf4389856203421252701&q=London&dt=2025-02-03
+// Sunrise and Sunset
+
+
 enum WeatherApiError: Error, Equatable {
     case invalidUrl
     case networkError(NetworkError)
@@ -25,6 +30,8 @@ final class WeatherApi: WeatherApiProtocol {
     
     @MainActor var searchBaseUrlString = "https://api.weatherapi.com/v1/search.json?key=b50111d17cbf4389856203421252701&q="
     @MainActor var currentWeatherBaseUrlString = "https://api.weatherapi.com/v1/current.json?key=b50111d17cbf4389856203421252701&q=id:"
+    @MainActor var astronomyBaseUrlString = "https://api.weatherapi.com/v1/astronomy.json?key=b50111d17cbf4389856203421252701&q=London&dt=2025-02-03"
+    
     
     private let network: NetworkProtocol
     private let codableHelper: CodableHelperProtocol
@@ -118,16 +125,48 @@ final class WeatherApi: WeatherApiProtocol {
         let urlRequest = URLRequest(url: url)
         let result: Result<CurrentWeatherDataObject, WeatherApiError> = await get(urlRequest: urlRequest)
         
+        let astronomyResult = await getAstronomy()
+        
         // Convert to Domain Object
         return result.flatMap {
-            guard let currentWeather = $0.weather(locationId: locationId) else {
+            
+            var sunrise: String? = nil
+            var sunset: String? = nil
+            
+            if case let .success(astronomy) = astronomyResult {
+                sunrise = astronomy.sunrise
+                sunset = astronomy.sunset
+            }
+            
+            guard let currentWeather = $0.weather(
+                locationId: locationId,
+                sunrise: sunrise,
+                sunset: sunset
+            ) else {
                 return .failure(.couldNotMakeDomainObject)
             }
             return .success(currentWeather)
         }
     }
     
-    
+    func getAstronomy() async -> Result<Astronomy, WeatherApiError> {
+        let urlString = await astronomyBaseUrlString
+        
+        guard let url = URL(string: urlString) else {
+            return .failure(.invalidUrl)
+        }
+        
+        let urlRequest = URLRequest(url: url)
+        let result: Result<AstronomyResponse, WeatherApiError> = await get(urlRequest: urlRequest)
+        
+        // Convert to Domain Object
+        return result.flatMap {
+            guard let astronomy = $0.domainObject else {
+                return .failure(.couldNotMakeDomainObject)
+            }
+            return .success(astronomy)
+        }
+    }
     
     
     // MARK: - Private

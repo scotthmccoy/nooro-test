@@ -17,6 +17,12 @@ struct SelectedWeatherView: View {
             cityAndLocationIcon
             temperature
             weatherStats
+            if let sunrise = weather.sunrise, let sunset = weather.sunset {
+                makeAstronomyInfo(
+                    sunrise: sunrise,
+                    sunset: sunset
+                )
+            }
         }
         
         
@@ -87,6 +93,30 @@ struct SelectedWeatherView: View {
                 cornerRadius: 18)
             .fill(Color.textFieldBackground)
         )
+    }
+    
+    @ViewBuilder
+    func makeAstronomyInfo(
+        sunrise: String,
+        sunset: String
+    ) -> some View {
+        
+        
+        HStack {
+            weatherStat(key: "Sunrise", value: sunrise)
+            weatherStat(key: "Sunset", value: sunset)
+        }
+        .padding(.top, 20)
+        .padding(.bottom, 20)
+        .padding(.leading, 10)
+        .padding(.trailing, 10)
+        .containerRelativeFrame(.horizontal, count: 8, span: 6, spacing: 0)
+        .background(
+            RoundedRectangle(
+                cornerRadius: 18)
+            .fill(Color.textFieldBackground)
+        )
+        
     }
     
     

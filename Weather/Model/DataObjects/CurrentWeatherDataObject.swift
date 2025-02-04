@@ -13,7 +13,11 @@ struct CurrentWeatherDataObject: Codable {
     let location: LocationDataObject?
     let current: CurrentDataObject?
     
-    func weather(locationId: Int) -> Weather? {
+    func weather(
+        locationId: Int,
+        sunrise: String?,
+        sunset: String?
+    ) -> Weather? {
         
         guard let locationName = location?.name else {
             AppLog("No location name")
@@ -58,7 +62,9 @@ struct CurrentWeatherDataObject: Codable {
             temperature: Int(temperature.rounded()),
             humidityPercent: humidityPercent,
             uvIndex: Int(uvIndex.rounded()),
-            feelsLikeTemperature: Int(feelsLikeTemperature)
+            feelsLikeTemperature: Int(feelsLikeTemperature),
+            sunrise: sunrise,
+            sunset: sunset
         )
     }
 }
